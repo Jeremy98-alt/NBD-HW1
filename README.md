@@ -5,3 +5,9 @@ Group 18 [Rivest] - 2020/2021 NBD Group Homework:
 - Stefano D'Arrigo
 - Alessandra Della Fazia
 - Simone Fiorellino
+
+---
+
+Requests: 
+
+![](./images/assignment1.jpg)
