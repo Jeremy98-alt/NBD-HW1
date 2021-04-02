@@ -10,4 +10,4 @@ Group 18 [Rivest] - 2020/2021 NBD Group Homework:
 
 Requests: 
 
-![](./images/hw1.jpg)
+![](./images/hw1.JPG)
