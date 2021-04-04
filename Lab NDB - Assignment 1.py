@@ -8,16 +8,16 @@ from statistics import mean
 def irreducibility(G):
     adj_matrix = nx.to_numpy_array(G)
 
-    # Identity matrix
+    # I + A
     final_A = np.identity(len(adj_matrix)) + adj_matrix
 
     A_tot = adj_matrix
-    for _ in range(2, len(adj_matrix)):
+    for _ in range(2, len(adj_matrix)): # A^2 + ... + A^(n-1)
         A_tot = A_tot.dot(adj_matrix)
         A_tot[A_tot != 0] = 1 # avoid overflow
         final_A = final_A + A_tot
 
-    return (final_A > 0).all()
+    return (final_A > 0).all() I + ... + A^(n-1) > 0 
 
 def laplacian(G):
     adj_matrix = nx.to_numpy_array(G)
@@ -80,35 +80,37 @@ def plotPerformance(sizes, time_perf_irr, time_perf_lapl, time_perf_bfs, method,
     axs.grid(color='grey', linestyle='-.')
 
 if __name__ == "__main__":
-    # choose the number of n nodes
-    n = 10#int(input("number of nodes: "))
-    p = 0.5#float(input("links connected with probability p: "))
-    d = 5#int(input("degree of each node for the r-regular graph: "))
+    n = 10 # choose the number of n nodes
+    p = 0.5 # choose the probability of inserting a link between two nodes (used for the Erdos Renyi graph)
+    d = 5 # choose the degree of each node (used for the r-regular graph)
 
     # create erdos-renyi graph
     p_ER = nx.erdos_renyi_graph(n = n, p = p) 
+    ax = plt.gca()
+    ax.set_title(f'Erdos Renyi graph with {n} nodes and p = {p}')
     nx.draw(p_ER, 				
-            #font style
             font_color="#FFFFFF",
             font_family = 'sans-serif',
-            with_labels=True)
-
+            with_labels=True,
+            ax = ax)
+    plt.savefig('./images/erdosrenyigraph.jpg')
     plt.show()
 
     # create the r-regular random graph
     r_regular_graph = nx.random_regular_graph(d = d, n = n, seed=None)
+    ax = plt.gca()
+    ax.set_title(f'r-regular graph with {n} nodes and {d} degree')
     nx.draw(r_regular_graph, 				
-        #font style
         font_color="#FFFFFF",
         font_family = 'sans-serif',
-        with_labels=True)
-
+        with_labels=True,
+        ax = ax)
+    plt.savefig('./images/regulargraph.jpg')
     plt.show()
 
     # check the connectivity of a given graph
     method = ["irreducibility", "laplacian", "bfs"]
-    connectivity_pER = []
-    connectivity_rG = []
+    connectivity_pER = []; connectivity_rG = []
 
     for m in method:
         if m == "irreducibility":
@@ -137,9 +139,10 @@ if __name__ == "__main__":
         time_perf_lapl.append([performance(p_ER, method = "laplacian"), performance(r_regular_graph, method = "laplacian")])
         time_perf_bfs.append([performance(p_ER, method = "bfs"), performance(r_regular_graph, method = "bfs")])
 
-    fig, axs = plt.subplots(1, 2)
+    fig, axs = plt.subplots(1, 2, figsize = (10, 5))
     plotPerformance(sizes, list(zip(*time_perf_irr))[0], list(zip(*time_perf_lapl))[0], list(zip(*time_perf_bfs))[0], method, "Erdos Renyi", axs[0])
     plotPerformance(sizes, list(zip(*time_perf_irr))[1], list(zip(*time_perf_lapl))[1], list(zip(*time_perf_bfs))[1], method, "r-regular", axs[1])
+    plt.savefig("./images/performaces.jpg")
     plt.show()
 
     # Monte Carlo Simulations -  estimates p_c(G) vs p
@@ -161,8 +164,9 @@ if __name__ == "__main__":
     plt.plot(list(probs), est_probs, color = "red", marker = "o")
     plt.xlabel("Probabilities")
     plt.ylabel("Estimated connectivity")
-    plt.title(f"Monte Carlo Simulations with {simulations} repetitions")
+    plt.title(f"MC Simulations with {simulations} repetitions - p_c(G) vs p")
     plt.grid(color='grey', linestyle='-.')
+    plt.savefig('./images/functionofp.jpg')
     plt.show()
 
     # Monte Carlo Simulations - estimates p_c(G) vs number of nodes
@@ -189,7 +193,8 @@ if __name__ == "__main__":
     plt.plot(sizes, list(zip(*est_probs))[1], color = "blue", marker = "o")
     plt.xlabel("Probabilities")
     plt.ylabel("Estimated connectivity")
-    plt.title(f"Monte Carlo Simulations with {simulations} repetitions")
+    plt.title(f"MC Simulations with {simulations} repetitions - p_c(G) vs nodes")
     plt.legend(["r = 2", "r = 8"])
     plt.grid(color='grey', linestyle='-.')
+    plt.savefig('./images/functionofnodes')
     plt.show()
