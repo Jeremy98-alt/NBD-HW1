@@ -17,7 +17,7 @@ def irreducibility(G):
         A_tot[A_tot != 0] = 1 # avoid overflow
         final_A = final_A + A_tot
 
-    return (final_A > 0).all() I + ... + A^(n-1) > 0 
+    return (final_A > 0).all() #I + ... + A^(n-1) > 0 
 
 def laplacian(G):
     adj_matrix = nx.to_numpy_array(G)
