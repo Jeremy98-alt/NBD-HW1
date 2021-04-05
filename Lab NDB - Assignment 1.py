@@ -8,8 +8,7 @@ from statistics import mean
 def irreducibility(G):
     adj_matrix = nx.to_numpy_array(G)
 
-    # I + A
-    final_A = np.identity(len(adj_matrix)) + adj_matrix
+    final_A = np.identity(len(adj_matrix)) + adj_matrix # I + A
 
     A_tot = adj_matrix
     for _ in range(2, len(adj_matrix)): # A^2 + ... + A^(n-1)
@@ -17,21 +16,18 @@ def irreducibility(G):
         A_tot[A_tot != 0] = 1 # avoid overflow
         final_A = final_A + A_tot
 
-    return (final_A > 0).all() #I + ... + A^(n-1) > 0 
+    return (final_A > 0).all() # I + ... + A^(n-1) > 0 
 
 def laplacian(G):
     adj_matrix = nx.to_numpy_array(G)
     
-    L = np.zeros((adj_matrix.shape[0], adj_matrix.shape[1]))
+    D = np.zeros((adj_matrix.shape[0], adj_matrix.shape[1]))
 
     # fill the correct value for the Laplacian matrix
     for i in range(adj_matrix.shape[0]):
-        for j in range(adj_matrix.shape[1]):
-            if i == j:
-                L[i][j] = sum(adj_matrix[i][:]) # or sum(adj_matrix[:][j])
-            
-            if adj_matrix[i][j] == 0 and adj_matrix[j][i] == 0:
-                L[i][j] == -1 
+        D[i][i] = sum(adj_matrix[i][:])
+    
+    L = D - adj_matrix
 
     eigenvalue = np.linalg.eigvals(L)
     
@@ -69,7 +65,22 @@ def performance(G, method):
     end = time.perf_counter()
     return(end - start)
 
-def plotPerformance(sizes, time_perf_irr, time_perf_lapl, time_perf_bfs, method, typegraph, axs):
+def complexityMethods(sizes, p, d):
+    time_perf_irr = []; time_perf_lapl = []; time_perf_bfs = []
+
+    for nd_size in tqdm(sizes):
+        p_ER = nx.erdos_renyi_graph(n = nd_size, p = p) 
+        r_regular_graph = nx.random_regular_graph(d = d, n = nd_size, seed=None)
+
+        time_perf_irr.append([performance(p_ER, method = "irreducibility"), performance(r_regular_graph, method = "irreducibility")])
+        time_perf_lapl.append([performance(p_ER, method = "laplacian"), performance(r_regular_graph, method = "laplacian")])
+        time_perf_bfs.append([performance(p_ER, method = "bfs"), performance(r_regular_graph, method = "bfs")])
+    
+    return time_perf_irr, time_perf_lapl, time_perf_bfs
+
+def plotPerformance(sizes, time_perf_irr, time_perf_lapl, time_perf_bfs, typegraph, axs):
+    method = ["irreducibility", "laplacian", "bfs"]
+    
     axs.plot(sizes, time_perf_irr, color = "green", marker = "o")
     axs.plot(sizes, time_perf_lapl, color = "red", marker = "o")
     axs.plot(sizes, time_perf_bfs, color = "blue", marker = "o")
@@ -109,19 +120,19 @@ if __name__ == "__main__":
     plt.show()
 
     # check the connectivity of a given graph
-    method = ["irreducibility", "laplacian", "bfs"]
     connectivity_pER = []; connectivity_rG = []
 
-    for m in method:
-        if m == "irreducibility":
-            connectivity_pER.append(irreducibility(p_ER))
-            connectivity_rG.append(irreducibility(r_regular_graph))
-        elif m == "laplacian":
-            connectivity_pER.append(laplacian(p_ER))
-            connectivity_rG.append(laplacian(r_regular_graph))
-        else:
-            connectivity_pER.append(bfs(p_ER, list(p_ER.nodes)[0]))
-            connectivity_rG.append(bfs(r_regular_graph, list(r_regular_graph.nodes)[0]))
+    # check irreducibility method of a graph
+    connectivity_pER.append(irreducibility(p_ER))
+    connectivity_rG.append(irreducibility(r_regular_graph))
+    
+    # check laplacian method of a graph
+    connectivity_pER.append(laplacian(p_ER))
+    connectivity_rG.append(laplacian(r_regular_graph))
+
+    # check BFS method of a graph
+    connectivity_pER.append(bfs(p_ER, list(p_ER.nodes)[0]))
+    connectivity_rG.append(bfs(r_regular_graph, list(r_regular_graph.nodes)[0]))
 
     # show the corresponding results of the connectivity for each method
     print(f"The method of irreducibility gives the connectivity {str(connectivity_pER[0]).upper()} for erdos-renyi graph and {str(connectivity_rG[0]).upper()} for r-regular graph")
@@ -130,18 +141,12 @@ if __name__ == "__main__":
     
     # plotting some plots to compare the complexity of the methods described above
     sizes = [ nd_size for nd_size in range(100, 600, 100)] # the right interval is not considered i.e. 100 to 500 not 600
-    time_perf_irr = []; time_perf_lapl = []; time_perf_bfs = []
-    for nd_size in tqdm(sizes):
-        p_ER = nx.erdos_renyi_graph(n = nd_size, p = p) 
-        r_regular_graph = nx.random_regular_graph(d = d, n = nd_size, seed=None)
 
-        time_perf_irr.append([performance(p_ER, method = "irreducibility"), performance(r_regular_graph, method = "irreducibility")])
-        time_perf_lapl.append([performance(p_ER, method = "laplacian"), performance(r_regular_graph, method = "laplacian")])
-        time_perf_bfs.append([performance(p_ER, method = "bfs"), performance(r_regular_graph, method = "bfs")])
+    time_perf_irr, time_perf_lapl, time_perf_bfs = complexityMethods(sizes, p, d) # get the complexities
 
     fig, axs = plt.subplots(1, 2, figsize = (10, 5))
-    plotPerformance(sizes, list(zip(*time_perf_irr))[0], list(zip(*time_perf_lapl))[0], list(zip(*time_perf_bfs))[0], method, "Erdos Renyi", axs[0])
-    plotPerformance(sizes, list(zip(*time_perf_irr))[1], list(zip(*time_perf_lapl))[1], list(zip(*time_perf_bfs))[1], method, "r-regular", axs[1])
+    plotPerformance(sizes, list(zip(*time_perf_irr))[0], list(zip(*time_perf_lapl))[0], list(zip(*time_perf_bfs))[0], "Erdos Renyi", axs[0])
+    plotPerformance(sizes, list(zip(*time_perf_irr))[1], list(zip(*time_perf_lapl))[1], list(zip(*time_perf_bfs))[1], "r-regular", axs[1])
     plt.savefig("./images/performaces.jpg")
     plt.show()
 
