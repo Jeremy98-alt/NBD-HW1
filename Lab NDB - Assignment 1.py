@@ -196,7 +196,7 @@ if __name__ == "__main__":
 
     plt.plot(sizes, list(zip(*est_probs))[0], color = "red", marker = "o")
     plt.plot(sizes, list(zip(*est_probs))[1], color = "blue", marker = "o")
-    plt.xlabel("Probabilities")
+    plt.xlabel("Nodes")
     plt.ylabel("Estimated connectivity")
     plt.title(f"MC Simulations with {simulations} repetitions - p_c(G) vs nodes")
     plt.legend(["r = 2", "r = 8"])
