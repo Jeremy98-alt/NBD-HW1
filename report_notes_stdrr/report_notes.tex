@@ -1,0 +1,121 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{url}
+
+\title{NBD HW1}
+\author{Stefano D'Arrigo}
+\date{April 2021}
+
+\begin{document}
+
+\maketitle
+
+\section{Part 2}
+\subsection{Exercise 1}
+Let $n$ be the number of ports of each switch. We know (slide 53, book pag. 17) that:
+\paragraph{Fat-Tree}
+\begin{itemize}
+    \item \textbf{Number of servers:}
+    \begin{equation}
+        N_{fat} = \underbrace{\Big(\underbrace{\frac{n}{2}}_{\text{ports per switch}} \cdot \underbrace{\frac{n}{2}}_{\text{aggregation layer}}\Big)}_{\text{pod}} \cdot \underbrace{n}_{\text{number of pods}} = \frac{n^3}{4}
+    \end{equation}
+    \item \textbf{Number of switches:}
+    \begin{equation}
+        S_{fat} = n \cdot \underbrace{\Big(\underbrace{\frac{n}{2}}_{\text{aggregation layer}} + \underbrace{\frac{n}{2}}_{\text{edge layer}}\Big)}_{\text{pod}} 
+        + \underbrace{\Big(\frac{n}{2}\Big)^2}_{\text{core layer}} = \frac{5}{4}n^2
+    \end{equation}
+    \item \textbf{Number of links:}
+    \begin{equation}
+        l_{fat} = N_{fat} \log_{\frac{n}{2}} \frac{N_{fat}}{2}
+    \end{equation}
+    \item \textbf{Number of links \underline{connecting switches}:}
+    \begin{equation}
+        \begin{split}
+            L_{fat} = l_{fat} - \underbrace{N_{fat}}_{\text{links servers}} &= N_{fat} \log_{\frac{n}{2}} \frac{N_{fat}}{2} - N_{fat} \\ &= N_{fat} \Big(\log_{\frac{n}{2}} \frac{N_{fat}}{2} - 1\Big)
+        \end{split}
+    \end{equation}
+\end{itemize}
+
+\paragraph{Jellyfish}
+\begin{itemize}
+    \item \textbf{Number of servers:}
+    \begin{equation}
+        N_{jelly} = S_{jelly} \cdot (n-r)
+    \end{equation}
+    \item \textbf{Number of switches:} 
+    \begin{equation}
+        S_{jelly}
+    \end{equation}
+    \item \textbf{Number of links:} (\textit{check slide 79})
+    \begin{equation}
+        l_{jelly} = N_{jelly} \cdot r
+    \end{equation}
+    \item \textbf{Number of links \underline{connecting switches}:}
+    \begin{equation}
+        L_{jelly} = \underbrace{\frac{S \cdot r}{2}}_{\text{each switch is connected to $r$ switches}}
+    \end{equation}
+\end{itemize}
+
+We want that:
+
+\begin{equation}
+    \begin{split}
+        \begin{cases}
+            N_{fat} = N_{jelly}\\
+            S_{fat} = S_{jelly}\\
+            L_{fat} = L_{jelly}
+        \end{cases}
+        \begin{cases}
+            \frac{n^3}{4} = S_{jelly}\cdot (n-r)\\
+            S_{jelly} = \frac{5}{4}n^2\\
+            L_{fat} = L_{jelly}
+        \end{cases} \Longrightarrow 
+        \begin{split}
+            &\frac{n^3}{4} = \frac{5}{4} n^2 (n-r)\\
+            &\frac{n^3}{4} = \frac{5}{4} n^3 - \frac{5}{4} n^2 r\\
+            &\frac{5}{4} n^2 r = n^3\\
+            &r = \frac{4}{5} n \hspace{5mm} (\star)
+        \end{split}
+    \end{split}
+\end{equation}
+
+Let's check the $(\star)$ result by substituting it in the third equation:
+
+\begin{proof}
+    \begin{equation}
+        \begin{split}
+            &L_{fat} = L_{jelly} \Leftrightarrow N_{fat} \Big(\log_{\frac{n}{2}} \frac{N_{fat}}{2} - 1\Big) = \frac{S_{jelly} \cdot r}{2} \Leftrightarrow^{\text{by } S_{fat} = S_{jelly}}\\ 
+            &\frac{n^3}{4} \Big(\log_{\frac{n}{2}} \frac{n^3}{8} - 1\Big) = \frac{\frac{5}{4} n^2 \cdot \frac{4}{5} n}{2} \Leftrightarrow \frac{n^3}{4}(3-1) = \frac{n^3}{2} \Leftrightarrow \frac{n^3}{2} = \frac{n^3}{2}
+        \end{split}
+    \end{equation}
+\end{proof}
+
+To summarize, $$\mathbf{r = \frac{4}{5}n}$$
+
+\subsection{Exercise 2}
+From slide 77 we know that:
+
+\begin{equation}
+    \tag{Application-oblivious throughput bound}
+    TH \leq \frac{l}{\bar{h} \cdot \nu_f}
+\end{equation}
+
+having $\bar{h}$ equal to 
+
+\begin{equation}
+    \begin{split}
+        &\bar{h} \geq \frac{\sum_{j=1}^{k-1} j \cdot r \cdot (r-1)^{j-1} + k \cdot R}{N - 1}\\
+        &\text{where} \hspace{5mm} R = N - 1 - \sum_{j-1}^{k-1} r \cdot (r-1)^{j-1}
+    \end{split}
+\end{equation}
+
+{\huge \textbf{TO BE CONTINUED}}
+
+\end{document}
+ 
