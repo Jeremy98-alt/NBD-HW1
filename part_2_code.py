@@ -6,7 +6,7 @@ import numpy as np
 r = lambda n: 4/5 * n
 S = lambda n: 5/4 * n**2
 N = lambda n: S(n) * (n - r(n))
-L = lambda n: 1/2 * n**3
+L = lambda n: n**3
 
 
 def h_bar_fat(n): 
@@ -20,8 +20,8 @@ def h_bar_jelly_bound(n):
 
 
 def throughput_fat(n):
-    l = lambda n:  3/4 * n**3
-    nu_f = lambda n: (n/2)**4*(n-1) + (n/2)**3*(n/2-1) + (n/2)**2*(n/2-1)
+    l = lambda n:  n**3
+    nu_f = lambda n: n * ((n/2)**4*(n-1) + (n/2)**3*(n/2-1) + (n/2)**2*(n/2-1))
     return l(n) / (h_bar_fat(n) * nu_f(n))
     
 
