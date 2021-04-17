@@ -40,19 +40,20 @@ def format_tex(float_number):
 
 
 
-# print()
-# n = int(input("Number of ports of a switch:\t"))
+print()
+n = int(input("Number of ports of a switch:\t"))
 
-# print(f'Average path length in a fat tree having n={n}:\t{h_bar_fat(n)}')
+print(f'Average path length in a fat tree having n={n}:\t{h_bar_fat(n)}')
 
-# print()    
+print()    
 
-# print(f'Throughput Fat-Tree:\t{throughput_fat(n)}\n\n')
+print(f'Throughput Fat-Tree:\t{throughput_fat(n)}\n\n')
 
-# print(f'Throughput Jellyfish:\t{throughput_jelly(n)}\n\n')
+print(f'Throughput Jellyfish:\t{throughput_jelly(n)}\n\n')
 
-# print(f'N:{N(n)}, S:{S(n)}\n')
- 
+print(f'N:{N(n)}, S:{S(n)}\n')
+
+print() 
 
 results = {'n':[], 'N':[], 'S':[], 'L':[], 't_f':[], 't_j':[]}
 for n in range(10, 51, 10):
@@ -67,3 +68,5 @@ df = pd.DataFrame(results)
 df['t_f'] = df['t_f'].map(lambda x:format_tex(x))
 df['t_j'] = df['t_j'].map(lambda x:format_tex(x))
 print(df.to_latex(index=False, escape=False))
+
+print()
