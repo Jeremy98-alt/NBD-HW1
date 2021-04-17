@@ -67,25 +67,37 @@ def performance(G, method):
 
 def complexityMethods(sizes, p, d):
     time_perf_irr = []; time_perf_lapl = []; time_perf_bfs = []
-
-    for nd_size in tqdm(sizes):
-        p_ER = nx.erdos_renyi_graph(n = nd_size, p = p) 
-        r_regular_graph = nx.random_regular_graph(d = d, n = nd_size, seed=None)
-
-        time_perf_irr.append([performance(p_ER, method = "irreducibility"), performance(r_regular_graph, method = "irreducibility")])
-        time_perf_lapl.append([performance(p_ER, method = "laplacian"), performance(r_regular_graph, method = "laplacian")])
-        time_perf_bfs.append([performance(p_ER, method = "bfs"), performance(r_regular_graph, method = "bfs")])
-    
+    simulation_size = 10
+    for nd_size in tqdm(sizes):       
+        simulations_p_ER_irr = []
+        simulations_rr_irr = []
+        simulations_p_ER_lap = []
+        simulations_rr_lap = []
+        simulations_p_ER_bfs = []
+        simulations_rr_bfs = []
+       
+        for _ in range(simulation_size): 
+            p_ER = nx.erdos_renyi_graph(n = nd_size, p = p) 
+            r_regular_graph = nx.random_regular_graph(d = d, n = nd_size, seed=None)
+            simulations_p_ER_irr.append(performance(p_ER, method = "irreducibility"))
+            simulations_rr_irr.append(performance(r_regular_graph, method = "irreducibility"))
+            simulations_p_ER_lap.append(performance(p_ER, method = "laplacian"))
+            simulations_rr_lap.append(performance(r_regular_graph, method = "laplacian"))
+            simulations_p_ER_bfs.append(performance(p_ER, method = "bfs"))
+            simulations_rr_bfs.append(performance(p_ER, method = "bfs"))
+        time_perf_irr.append([ mean(simulations_p_ER_irr), mean(simulations_rr_irr) ])
+        time_perf_lapl.append([ mean(simulations_p_ER_lap), mean(simulations_rr_lap)])
+        time_perf_bfs.append([ mean(simulations_p_ER_bfs), mean(simulations_rr_bfs) ])
     return time_perf_irr, time_perf_lapl, time_perf_bfs
 
 def plotPerformance(sizes, time_perf_irr, time_perf_lapl, time_perf_bfs, typegraph, axs):
     method = ["irreducibility", "laplacian", "bfs"]
     
-    axs.plot(sizes, time_perf_irr, color = "green", marker = "o")
-    axs.plot(sizes, time_perf_lapl, color = "red", marker = "o")
-    axs.plot(sizes, time_perf_bfs, color = "blue", marker = "o")
+    axs.plot(sizes, time_perf_irr, color = "red", marker = "*")
+    axs.plot(sizes, time_perf_lapl, color = "green", marker = "*")
+    axs.plot(sizes, time_perf_bfs, color = "purple", marker = "*")
     axs.legend(method)
-    axs.set_title(f"Overall performance with {typegraph} Graph")
+    axs.set_title(f"Overall performance with {typegraph} Graph\n Simulation size = 10")
     axs.set_ylabel("Running Time (sec)")
     axs.set_xlabel("Node sizes")
     axs.grid(color='grey', linestyle='-.')
@@ -152,7 +164,7 @@ if __name__ == "__main__":
 
     # Monte Carlo Simulations -  estimates p_c(G) vs p
     nd_size = 100; simulations = 1000
-    probs = np.arange(0.1, 1, 0.1)
+    probs = np.arange(0, 1, 0.025)
     est_probs = []
     for p in tqdm(list(probs)):
         true_bfs = [] # count how much the graph is connected
@@ -166,9 +178,9 @@ if __name__ == "__main__":
 
         est_probs.append(mean(true_bfs))
 
-    plt.plot(list(probs), est_probs, color = "red", marker = "o")
+    plt.plot(list(probs), est_probs, color = "purple", marker = "*")
     plt.xlabel("Probabilities")
-    plt.ylabel("Estimated connectivity")
+    plt.ylabel("Probability of Connectivity")
     plt.title(f"MC Simulations with {simulations} repetitions - p_c(G) vs p")
     plt.grid(color='grey', linestyle='-.')
     plt.savefig('./images/functionofp.jpg')
@@ -194,10 +206,10 @@ if __name__ == "__main__":
 
         est_probs.append([ mean(list(zip(*true_bfs))[0]), mean(list(zip(*true_bfs))[1]) ])
 
-    plt.plot(sizes, list(zip(*est_probs))[0], color = "red", marker = "o")
-    plt.plot(sizes, list(zip(*est_probs))[1], color = "blue", marker = "o")
+    plt.plot(sizes, list(zip(*est_probs))[0], color = "red", marker = "*")
+    plt.plot(sizes, list(zip(*est_probs))[1], color = "purple", marker = "*")
     plt.xlabel("Nodes")
-    plt.ylabel("Estimated connectivity")
+    plt.ylabel("Probability of Connectivity")
     plt.title(f"MC Simulations with {simulations} repetitions - p_c(G) vs nodes")
     plt.legend(["r = 2", "r = 8"])
     plt.grid(color='grey', linestyle='-.')
