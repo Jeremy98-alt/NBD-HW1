@@ -54,8 +54,9 @@ def format_tex(float_number):
 # print(f'N:{N(n)}, S:{S(n)}\n')
  
 
-results = {'N':[], 'S':[], 'L':[], 't_f':[], 't_j':[]}
+results = {'n':[], 'N':[], 'S':[], 'L':[], 't_f':[], 't_j':[]}
 for n in range(10, 51, 10):
+    results['n'].append(n)
     results['N'].append(int(N(n)))
     results['S'].append(int(S(n)))
     results['L'].append(int(L(n)))
