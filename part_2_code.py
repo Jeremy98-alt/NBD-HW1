@@ -40,23 +40,23 @@ def format_tex(float_number):
 
 
 
-print()
-n = int(input("Number of ports of a switch:\t"))
+# print()
+# n = int(input("Number of ports of a switch:\t"))
 
-print(f'Average path length in a fat tree having n={n}:\t{h_bar_fat(n)}')
+# print(f'Average path length in a fat tree having n={n}:\t{h_bar_fat(n)}')
 
-print()    
+# print()    
 
-print(f'Throughput Fat-Tree:\t{throughput_fat(n)}\n\n')
+# print(f'Throughput Fat-Tree:\t{throughput_fat(n)}\n\n')
 
-print(f'Throughput Jellyfish:\t{throughput_jelly(n)}\n\n')
+# print(f'Throughput Jellyfish:\t{throughput_jelly(n)}\n\n')
 
-print(f'N:{N(n)}, S:{S(n)}\n')
+# print(f'N:{N(n)}, S:{S(n)}\n')
 
 print() 
 
 results = {'n':[], 'N':[], 'S':[], 'L':[], 't_f':[], 't_j':[]}
-for n in range(10, 51, 10):
+for n in range(20, 61, 10):
     results['n'].append(n)
     results['N'].append(int(N(n)))
     results['S'].append(int(S(n)))
